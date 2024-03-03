@@ -6,23 +6,24 @@ import presentation.interfaces.DishMenu
 import presentation.models.DishMenuOptions
 import services.interfaces.MenuService
 import services.models.DishResponse
+import services.models.ResponseCode
 
 class DishMenuImpl(private val menuService: MenuService) : DishMenu {
     private val hintNotEmptyString = "Name should be not empty\n\n"
     private fun setDifficulty(): DishResponse {
         val name = getAndValidateDishName() ?:
-            return DishResponse(404, hintNotEmptyString, null)
+            return DishResponse(ResponseCode.BadRequest, hintNotEmptyString, null)
         val difficulty = getValidatedDifficulty() ?:
-            return DishResponse(404, "Not valid duration\n\n", null)
+            return DishResponse(ResponseCode.BadRequest, "Not valid duration\n\n", null)
         val response = menuService.setDifficultyOfDish(name, difficulty)
         return response
     }
 
     private fun setPrice(): DishResponse {
         val name = getAndValidateDishName() ?:
-            return DishResponse(404, hintNotEmptyString, null)
+            return DishResponse(ResponseCode.BadRequest, hintNotEmptyString, null)
         val price = getValidatedPrice() ?:
-            return DishResponse(404, "Not valid price\n\n", null)
+            return DishResponse(ResponseCode.BadRequest, "Not valid price\n\n", null)
         val response = menuService.setPriceOfDish(name, price)
         return response
     }
@@ -30,16 +31,16 @@ class DishMenuImpl(private val menuService: MenuService) : DishMenu {
 
     private fun setAmount(): DishResponse {
         val name = getAndValidateDishName() ?:
-            return DishResponse(404, hintNotEmptyString, null)
+            return DishResponse(ResponseCode.BadRequest, hintNotEmptyString, null)
         val amount = getValidatedAmount() ?:
-            return DishResponse(404, "Not valid amount\n\n", null)
+            return DishResponse(ResponseCode.BadRequest, "Not valid amount\n\n", null)
         val response = menuService.setAmountOfDish(name, amount)
         return response
     }
 
     private fun dropDish(): DishResponse {
         val name = getAndValidateDishName() ?:
-        return DishResponse(404, hintNotEmptyString, null)
+        return DishResponse(ResponseCode.BadRequest, hintNotEmptyString, null)
         val response = menuService.dropDish(name)
         return response
     }
@@ -47,17 +48,17 @@ class DishMenuImpl(private val menuService: MenuService) : DishMenu {
     private fun addOrReplaceDish(): DishResponse {
         var response = createAndValidateDishParameters()
         val dish = response.dish
-        if(response.status != 200 || dish == null)
+        if(response.status != ResponseCode.Success || dish == null)
             return response
         response = menuService.addDish(dish)
-        if (response.status == 200)
+        if (response.status == ResponseCode.Success)
             return response
         println(response.hint)
         val input = readlnOrNull()
         response = when (input) {
             "Yes" -> menuService.updateDish(dish)
-            "No" -> DishResponse(200, "Dish was not updated\n\n", null)
-            else -> DishResponse(404, "Incorrect input\n\n", null)
+            "No" -> DishResponse(ResponseCode.Success, "Dish was not updated\n\n", null)
+            else -> DishResponse(ResponseCode.BadRequest, "Incorrect input\n\n", null)
         }
         return response
     }
@@ -96,19 +97,19 @@ class DishMenuImpl(private val menuService: MenuService) : DishMenu {
 
     private fun createAndValidateDishParameters() : DishResponse {
         val name = getAndValidateDishName() ?:
-            return DishResponse(404, hintNotEmptyString, null)
+            return DishResponse(ResponseCode.BadRequest, hintNotEmptyString, null)
         val amount = getValidatedAmount() ?:
-            return DishResponse(404, "Not valid amount\n\n", null)
+            return DishResponse(ResponseCode.BadRequest, "Not valid amount\n\n", null)
         val price = getValidatedPrice() ?:
-            return DishResponse(404, "Not valid price\n\n", null)
+            return DishResponse(ResponseCode.BadRequest, "Not valid price\n\n", null)
         val difficulty = getValidatedDifficulty() ?:
-            return DishResponse(404, "Not valid duration\n\n", null)
+            return DishResponse(ResponseCode.BadRequest, "Not valid duration\n\n", null)
         val newDish = Dish(name, amount, price, difficulty)
-        return DishResponse(200, "Dish was successfully created\n\n", newDish)
+        return DishResponse(ResponseCode.Success, "Dish was successfully created\n\n", newDish)
     }
 
     private fun exit(): DishResponse {
-        return DishResponse(400, "Exiting\n\n", null)
+        return DishResponse(ResponseCode.Exiting, "Exiting\n\n", null)
     }
 
     private fun getUserOptionChoice(): DishMenuOptions? {
@@ -134,7 +135,7 @@ class DishMenuImpl(private val menuService: MenuService) : DishMenu {
             displayMenuOptions()
             dishResponse = mapUserChoice(getUserOptionChoice())
             print(dishResponse.hint)
-        } while (dishResponse.status != 400)
+        } while (dishResponse.status != ResponseCode.Exiting)
         return dishResponse
     }
 
@@ -147,7 +148,7 @@ class DishMenuImpl(private val menuService: MenuService) : DishMenu {
             DishMenuOptions.SetDifficulty -> setDifficulty()
             DishMenuOptions.Exit -> exit()
             else -> run {
-                return DishResponse(400, "Incorrect input\n\n", null)
+                return DishResponse(ResponseCode.BadRequest, "Incorrect input\n\n", null)
             }
         }
     }

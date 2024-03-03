@@ -6,6 +6,7 @@ import presentation.interfaces.AuthMenu
 import presentation.models.AuthMenuOptions
 import presentation.models.Role
 import services.models.AuthResponse
+import services.models.ResponseCode
 
 class AuthMenuImpl(private val authService: AuthService) : AuthMenu {
     override fun displayMenuOptions() {
@@ -18,12 +19,12 @@ class AuthMenuImpl(private val authService: AuthService) : AuthMenu {
             AuthMenuOptions.SignIn -> signInUser()
             AuthMenuOptions.Exit -> exit()
             else -> run {
-                return AuthResponse(404, "Incorrect input\n", null)
+                return AuthResponse(ResponseCode.BadRequest, "Incorrect input\n", null)
             }
         }
     }
     private fun exit() : AuthResponse {
-        return AuthResponse(400, "Exiting\n\n", null)
+        return AuthResponse(ResponseCode.Exiting, "Exiting\n\n", null)
     }
     private fun askToEnterLoginAndPassword() : Pair<String, String>? {
         println("Enter login: ")
@@ -37,13 +38,13 @@ class AuthMenuImpl(private val authService: AuthService) : AuthMenu {
     }
     private fun signInUser() : AuthResponse {
         val loginAndPassword : Pair<String, String> = askToEnterLoginAndPassword()
-            ?: return AuthResponse(404, "Login and password should be not null\n\n", null)
+            ?: return AuthResponse(ResponseCode.BadRequest, "Login and password should be not null\n\n", null)
         val response = authService.loginUser(loginAndPassword.first, loginAndPassword.second)
         return response
     }
     private fun signUpUser(role : Role) : AuthResponse {
         val loginAndPassword : Pair<String, String> = askToEnterLoginAndPassword()
-            ?: return AuthResponse(404, "Login and password should be not null\n\n", null)
+            ?: return AuthResponse(ResponseCode.BadRequest, "Login and password should be not null\n\n", null)
         val response = authService.registerUser(loginAndPassword.first, loginAndPassword.second, role)
         return response
     }
@@ -62,10 +63,10 @@ class AuthMenuImpl(private val authService: AuthService) : AuthMenu {
         do {
             displayMenuOptions()
             authResponse = mapUserChoice(getUserOptionChoice())
-            if(authResponse.status == 400)
+            if(authResponse.status == ResponseCode.Exiting)
                 return authResponse
             print(authResponse.hint)
-        } while(authResponse.status != 200)
+        } while(authResponse.status != ResponseCode.Success)
         return authResponse
     }
 }

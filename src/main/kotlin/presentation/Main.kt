@@ -4,6 +4,7 @@ import data.models.AdminAccount
 import data.models.UserAccount
 import data.models.VisitorAccount
 import presentation.menu.MenuFactory
+import services.models.ResponseCode
 
 fun main() {
     val menuFactory = MenuFactory()
@@ -11,7 +12,7 @@ fun main() {
     val authMenu = menuFactory.getAuthMenu()
 
     val response = authMenu.dealWithUser()
-    if(response.status == 400)
+    if(response.status == ResponseCode.Exiting)
         return
     if(response.account is AdminAccount)
         dishMenu.dealWithUser()

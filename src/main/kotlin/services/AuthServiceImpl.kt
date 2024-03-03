@@ -7,6 +7,7 @@ import org.mindrot.jbcrypt.BCrypt
 import services.interfaces.AuthService
 import services.models.AuthResponse
 import presentation.models.Role
+import services.models.ResponseCode
 
 class AuthServiceImpl(private val userRepository: UserRepositoryImpl) : AuthService {
 
@@ -14,7 +15,7 @@ class AuthServiceImpl(private val userRepository: UserRepositoryImpl) : AuthServ
         return if (checkLoginExistence(login)) {
             checkPassword(login, password)
         } else {
-            AuthResponse(404, "No user with such login\n\n", null)
+            AuthResponse(ResponseCode.BadRequest, "No user with such login\n\n", null)
         }
     }
 
@@ -23,16 +24,16 @@ class AuthServiceImpl(private val userRepository: UserRepositoryImpl) : AuthServ
         val hashedPassword = user.password
         if (BCrypt.checkpw(password, hashedPassword)) {
             userRepository.enterAccount(login)
-            return AuthResponse (200, "User was successfully logged in\n\n", user)
+            return AuthResponse (ResponseCode.Success, "User was successfully logged in\n\n", user)
         }
-        return AuthResponse(404, "Incorrect password\n\n", user)
+        return AuthResponse(ResponseCode.BadRequest, "Incorrect password\n\n", user)
     }
 
     override fun registerUser(login: String, password: String, role: Role): AuthResponse {
         if (!checkLoginExistence(login)) {
             return createAccount(login, password, role)
         }
-        return AuthResponse(404, "User with such login already exists\n\n", null)
+        return AuthResponse(ResponseCode.BadRequest, "User with such login already exists\n\n", null)
     }
 
     private fun checkLoginExistence(login: String): Boolean {
@@ -51,6 +52,6 @@ class AuthServiceImpl(private val userRepository: UserRepositoryImpl) : AuthServ
             Role.Visitor -> VisitorAccount(login, hashedPassword)
         }
         userRepository.createAccount(user)
-        return AuthResponse (200, "User was successfully signed up\n", user)
+        return AuthResponse (ResponseCode.Success, "User was successfully signed up\n", user)
     }
 }
