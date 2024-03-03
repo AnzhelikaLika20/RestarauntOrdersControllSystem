@@ -1,8 +1,8 @@
 package presentation.interfaces
 
-import services.models.AdminResponse
+import services.models.DishResponse
 
 interface DishMenu {
     fun displayMenuOptions()
-    fun dealWithUser() : AdminResponse
+    fun dealWithUser() : DishResponse
 }

@@ -14,4 +14,10 @@ class AllMenuPresentations {
             "5. Set difficulty for dish\n" +
             "6. Exit\n"
 
+    val visitorOptions : String = "1. Create order,\n" +
+            "2. Get current order status,\n" +
+            "3. Add dish into the order,\n" +
+            "4. Pay order,\n" +
+            "5. Exit\n"
+
 }

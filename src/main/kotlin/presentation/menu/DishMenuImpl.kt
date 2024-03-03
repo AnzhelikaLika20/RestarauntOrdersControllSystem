@@ -5,46 +5,46 @@ import di.DI
 import presentation.interfaces.DishMenu
 import presentation.models.DishMenuOptions
 import services.interfaces.MenuService
-import services.models.AdminResponse
+import services.models.DishResponse
 
 class DishMenuImpl(private val menuService: MenuService) : DishMenu {
     private val hintNotEmptyString = "Name should be not empty\n\n"
-    private fun setDifficulty(): AdminResponse {
+    private fun setDifficulty(): DishResponse {
         val name = getAndValidateDishName() ?:
-            return AdminResponse(404, hintNotEmptyString, null)
+            return DishResponse(404, hintNotEmptyString, null)
         val difficulty = getValidatedDifficulty() ?:
-            return AdminResponse(404, "Not valid duration\n\n", null)
+            return DishResponse(404, "Not valid duration\n\n", null)
         val response = menuService.setDifficultyOfDish(name, difficulty)
         return response
     }
 
-    private fun setPrice(): AdminResponse {
+    private fun setPrice(): DishResponse {
         val name = getAndValidateDishName() ?:
-            return AdminResponse(404, hintNotEmptyString, null)
+            return DishResponse(404, hintNotEmptyString, null)
         val price = getValidatedPrice() ?:
-            return AdminResponse(404, "Not valid price\n\n", null)
+            return DishResponse(404, "Not valid price\n\n", null)
         val response = menuService.setPriceOfDish(name, price)
         return response
     }
 
 
-    private fun setAmount(): AdminResponse {
+    private fun setAmount(): DishResponse {
         val name = getAndValidateDishName() ?:
-            return AdminResponse(404, hintNotEmptyString, null)
+            return DishResponse(404, hintNotEmptyString, null)
         val amount = getValidatedAmount() ?:
-            return AdminResponse(404, "Not valid amount\n\n", null)
+            return DishResponse(404, "Not valid amount\n\n", null)
         val response = menuService.setAmountOfDish(name, amount)
         return response
     }
 
-    private fun dropDish(): AdminResponse {
+    private fun dropDish(): DishResponse {
         val name = getAndValidateDishName() ?:
-        return AdminResponse(404, hintNotEmptyString, null)
+        return DishResponse(404, hintNotEmptyString, null)
         val response = menuService.dropDish(name)
         return response
     }
 
-    private fun addOrReplaceDish(): AdminResponse {
+    private fun addOrReplaceDish(): DishResponse {
         var response = createAndValidateDishParameters()
         val dish = response.dish
         if(response.status != 200 || dish == null)
@@ -56,8 +56,8 @@ class DishMenuImpl(private val menuService: MenuService) : DishMenu {
         val input = readlnOrNull()
         response = when (input) {
             "Yes" -> menuService.updateDish(dish)
-            "No" -> AdminResponse(200, "Dish was not updated\n\n", null)
-            else -> AdminResponse(404, "Incorrect input\n\n", null)
+            "No" -> DishResponse(200, "Dish was not updated\n\n", null)
+            else -> DishResponse(404, "Incorrect input\n\n", null)
         }
         return response
     }
@@ -94,21 +94,21 @@ class DishMenuImpl(private val menuService: MenuService) : DishMenu {
         return amount
     }
 
-    private fun createAndValidateDishParameters() : AdminResponse {
+    private fun createAndValidateDishParameters() : DishResponse {
         val name = getAndValidateDishName() ?:
-            return AdminResponse(404, hintNotEmptyString, null)
+            return DishResponse(404, hintNotEmptyString, null)
         val amount = getValidatedAmount() ?:
-            return AdminResponse(404, "Not valid amount\n\n", null)
+            return DishResponse(404, "Not valid amount\n\n", null)
         val price = getValidatedPrice() ?:
-            return AdminResponse(404, "Not valid price\n\n", null)
+            return DishResponse(404, "Not valid price\n\n", null)
         val difficulty = getValidatedDifficulty() ?:
-            return AdminResponse(404, "Not valid duration\n\n", null)
+            return DishResponse(404, "Not valid duration\n\n", null)
         val newDish = Dish(name, amount, price, difficulty)
-        return AdminResponse(200, "Dish was successfully created\n\n", newDish)
+        return DishResponse(200, "Dish was successfully created\n\n", newDish)
     }
 
-    private fun exit(): AdminResponse {
-        return AdminResponse(400, "Exiting\n\n", null)
+    private fun exit(): DishResponse {
+        return DishResponse(400, "Exiting\n\n", null)
     }
 
     private fun getUserOptionChoice(): DishMenuOptions? {
@@ -128,17 +128,17 @@ class DishMenuImpl(private val menuService: MenuService) : DishMenu {
         print(DI.menuPresentations.dishMenuOptions)
     }
 
-    override fun dealWithUser(): AdminResponse {
-        var adminResponse: AdminResponse
+    override fun dealWithUser(): DishResponse {
+        var dishResponse: DishResponse
         do {
             displayMenuOptions()
-            adminResponse = mapUserChoice(getUserOptionChoice())
-            print(adminResponse.hint)
-        } while (adminResponse.status != 400)
-        return adminResponse
+            dishResponse = mapUserChoice(getUserOptionChoice())
+            print(dishResponse.hint)
+        } while (dishResponse.status != 400)
+        return dishResponse
     }
 
-    private fun mapUserChoice(userChoice: DishMenuOptions?): AdminResponse {
+    private fun mapUserChoice(userChoice: DishMenuOptions?): DishResponse {
         return when (userChoice) {
             DishMenuOptions.AddDish -> addOrReplaceDish()
             DishMenuOptions.DropDish -> dropDish()
@@ -147,7 +147,7 @@ class DishMenuImpl(private val menuService: MenuService) : DishMenu {
             DishMenuOptions.SetDifficulty -> setDifficulty()
             DishMenuOptions.Exit -> exit()
             else -> run {
-                return AdminResponse(400, "Incorrect input\n\n", null)
+                return DishResponse(400, "Incorrect input\n\n", null)
             }
         }
     }
