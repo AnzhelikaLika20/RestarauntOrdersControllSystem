@@ -22,7 +22,7 @@ class AuthServiceImpl(private val userRepository: UserRepositoryImpl) : AuthServ
         val user = userRepository.getAccountByLogin(login)
         val hashedPassword = user.password
         if (BCrypt.checkpw(password, hashedPassword)) {
-            userRepository.signInUser(login)
+            userRepository.enterAccount(login)
             return AuthResponse (200, "User was successfully logged in\n\n", user)
         }
         return AuthResponse(404, "Incorrect password\n\n", user)
@@ -50,7 +50,7 @@ class AuthServiceImpl(private val userRepository: UserRepositoryImpl) : AuthServ
             Role.Admin -> AdminAccount(login, hashedPassword)
             Role.Visitor -> VisitorAccount(login, hashedPassword)
         }
-        userRepository.signUpUser(user)
+        userRepository.createAccount(user)
         return AuthResponse (200, "User was successfully signed up\n", user)
     }
 }

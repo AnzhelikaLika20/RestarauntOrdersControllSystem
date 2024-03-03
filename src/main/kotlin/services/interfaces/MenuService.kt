@@ -7,8 +7,8 @@ import services.models.AuthResponse
 interface MenuService {
     fun addDish(dish : Dish) : AdminResponse
     fun updateDish(dish : Dish) : AdminResponse
-    fun dropDish() : AdminResponse
-    fun setAmountOfDish() : AdminResponse
-    fun setPriceOfDish() : AdminResponse
-    fun setDifficultyOfDish() : AdminResponse
+    fun dropDish(dishName : String) : AdminResponse
+    fun setAmountOfDish(dishName : String, amount : Int) : AdminResponse
+    fun setPriceOfDish(dishName : String, price : Double) : AdminResponse
+    fun setDifficultyOfDish(dishName : String, difficulty : Int) : AdminResponse
 }

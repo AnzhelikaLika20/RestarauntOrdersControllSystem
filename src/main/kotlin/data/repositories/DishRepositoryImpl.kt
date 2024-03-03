@@ -37,35 +37,65 @@ class DishRepositoryImpl(private val pathToSerializedStorage: String) : DishRepo
         storeInfo(serializedInfo)
     }
 
-    override fun containsDish(name: String) : Boolean {
+    override fun containsDish(dishName: String) : Boolean {
         val infoFromFile = loadInfo()
         val listOfDishes: MutableList<Dish> =
             if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<Dish>>(
                 infoFromFile
             ).toMutableList()
-        return listOfDishes.any { x -> x.name == name }
+        return listOfDishes.any { x -> x.name == dishName }
     }
 
-    override fun dropDish(dish : Dish) {
-        /*val infoFromFile = loadInfo()
+    override fun dropDish(dishName : String) {
+        val infoFromFile = loadInfo()
         val listOfDishes: MutableList<Dish> =
             if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<Dish>>(
                 infoFromFile
             ).toMutableList()
-        listOfDishes.remove(dish)
+        listOfDishes.removeIf { x -> x.name == dishName }
         val serializedInfo = Json.encodeToString(listOfDishes)
-        storeInfo(serializedInfo)*/
+        storeInfo(serializedInfo)
     }
 
-    override fun setAmountForDish(dish : Dish, amount : Int) {
-        //dishes[dish.name]?.amount = amount
+    override fun setAmountForDish(dishName : String, amount : Int) {
+        val infoFromFile = loadInfo()
+        val listOfDishes: MutableList<Dish> =
+            if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<Dish>>(
+                infoFromFile
+            ).toMutableList()
+        val dish : Dish = listOfDishes.find { x -> x.name == dishName } ?: return
+        dish.amount = amount
+        dropDish(dishName)
+        addDish(dish)
+        val serializedInfo = Json.encodeToString(listOfDishes)
+        storeInfo(serializedInfo)
     }
 
-    override fun setPriceForDish(dish : Dish, price : Double) {
-        //dishes[dish.name]?.price = price
+    override fun setPriceForDish(dishName : String, price : Double) {
+        val infoFromFile = loadInfo()
+        val listOfDishes: MutableList<Dish> =
+            if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<Dish>>(
+                infoFromFile
+            ).toMutableList()
+        val dish : Dish = listOfDishes.find { x -> x.name == dishName } ?: return
+        dish.price = price
+        dropDish(dishName)
+        addDish(dish)
+        val serializedInfo = Json.encodeToString(listOfDishes)
+        storeInfo(serializedInfo)
     }
 
-    override fun setDifficultyForDish(dish : Dish, durationInMinutes : Int) {
-        //dishes[dish.name]?.difficulty = durationInMinutes
+    override fun setDifficultyForDish(dishName : String, durationInMinutes : Int) {
+        val infoFromFile = loadInfo()
+        val listOfDishes: MutableList<Dish> =
+            if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<Dish>>(
+                infoFromFile
+            ).toMutableList()
+        val dish : Dish = listOfDishes.find { x -> x.name == dishName } ?: return
+        dish.difficulty = durationInMinutes
+        dropDish(dishName)
+        addDish(dish)
+        val serializedInfo = Json.encodeToString(listOfDishes)
+        storeInfo(serializedInfo)
     }
 }

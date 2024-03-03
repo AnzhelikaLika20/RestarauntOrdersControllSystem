@@ -28,7 +28,7 @@ class UserRepositoryImpl(private val pathToSerializedStorage: String) : UserRepo
         }
     }
 
-    override fun signUpUser(user : UserAccount) {
+    override fun createAccount(user : UserAccount) {
         val infoFromFile = loadInfo()
         val json = Json {
             serializersModule = SerializersModule {
@@ -46,7 +46,7 @@ class UserRepositoryImpl(private val pathToSerializedStorage: String) : UserRepo
         storeInfo(serializedInfo)
     }
 
-    override fun signInUser(login: String) {
+    override fun enterAccount(login: String) {
         val infoFromFile = loadInfo()
         val listOfUsers: MutableList<UserAccount> =
             if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<UserAccount>>(
