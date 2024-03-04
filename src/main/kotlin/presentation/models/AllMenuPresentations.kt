@@ -15,9 +15,9 @@ class AllMenuPresentations {
             "6. Exit\n"
 
     val visitorOptions : String = "1. Create order,\n" +
-            "2. Get current order status,\n" +
-            "3. Add dish into the order,\n" +
-            "4. Pay order,\n" +
-            "5. Exit\n"
+            "2. Add dish into the order,\n" +
+            "3. Pay order,\n" +
+            "4. Cancel order\n" +
+            "4. Exit\n"
 
 }

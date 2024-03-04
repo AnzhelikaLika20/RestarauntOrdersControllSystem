@@ -98,4 +98,22 @@ class DishRepositoryImpl(private val pathToSerializedStorage: String) : DishRepo
         val serializedInfo = Json.encodeToString(listOfDishes)
         storeInfo(serializedInfo)
     }
+
+    override fun getAvailableDishes(): List<Dish> {
+        val infoFromFile = loadInfo()
+        val listOfDishes: MutableList<Dish> =
+            if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<Dish>>(
+                infoFromFile
+            ).toMutableList()
+        return listOfDishes.filter { x -> x.amount > 0 }
+    }
+
+    override fun getDishByName(dishName : String): Dish? {
+        val infoFromFile = loadInfo()
+        val listOfDishes: MutableList<Dish> =
+            if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<Dish>>(
+                infoFromFile
+            ).toMutableList()
+        return listOfDishes.find { x -> x.name == dishName }
+    }
 }

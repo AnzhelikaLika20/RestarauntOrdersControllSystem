@@ -1,13 +1,14 @@
 package data.Interfaces
 
 import data.models.Order
+import data.models.OrderDish
 import data.models.UserAccount
 
 interface OrderRepository {
     fun storeInfo(info: String)
     fun loadInfo() : String
-    fun createOrder(order : Order)
-    fun changeStatus(id : Int)
-    fun containsOrder(id : Int) : Boolean
-    fun getAccountById(id : Int) : Order?
+    fun addOrder(order : Order)
+    fun containsOrder(id : String) : Boolean
+    fun getActiveOrdersOfUser(login : String) : List<String>
+    fun addDishIntoOrder(uuid: String, dishes: List<OrderDish>) : Order?
 }

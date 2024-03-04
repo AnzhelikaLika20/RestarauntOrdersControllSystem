@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName("VisitorAccount")
-data class VisitorAccount(private val visitorLogin: String, private val visitorPassword: String) :
-    UserAccount(visitorLogin, visitorPassword)
+class VisitorAccount : UserAccount{
+    constructor(visitorLogin: String, visitorPassword: String) : super(visitorLogin, visitorPassword)
+}

@@ -10,4 +10,6 @@ interface MenuService {
     fun setAmountOfDish(dishName : String, amount : Int) : DishResponse
     fun setPriceOfDish(dishName : String, price : Double) : DishResponse
     fun setDifficultyOfDish(dishName : String, difficulty : Int) : DishResponse
+    fun getAvailableDishes() : List<Dish>
+    fun getDishByName(dishName : String) : DishResponse
 }

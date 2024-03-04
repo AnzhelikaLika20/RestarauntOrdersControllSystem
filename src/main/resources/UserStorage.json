@@ -1,1 +1,1 @@
-[{"type":"AdminAccount","login":"adm","password":"$2a$10$PaYpEeZ.tR2951JfxHiGiu9bIX3oeCKFOjCOJZ84wh9KfrEYMyGBy","isActive":true,"adminLogin":"adm","adminPassword":"$2a$10$PaYpEeZ.tR2951JfxHiGiu9bIX3oeCKFOjCOJZ84wh9KfrEYMyGBy"}]
+[{"type":"VisitorAccount","login":"vis","password":"$2a$10$XkuMvxM9/TNK2todfyOCXe4ot4JRG0trB9lJibxNb8vA43ohWrBRW","isActive":true}]

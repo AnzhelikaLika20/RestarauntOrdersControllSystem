@@ -1,12 +1,13 @@
 package presentation.interfaces
 
-import services.models.DishResponse
+import data.models.VisitorAccount
+import services.models.OrderResponse
 
 interface VisitorMenu {
     fun displayMenuOptions()
-    fun dealWithUser() : DishResponse
-    fun getCurrentOrderStatus(id : Int)
-    fun createOrder()
-    fun addDishIntoExistingOrder(id : Int)
-    fun payOrder(id: Int)
+    fun dealWithUser(account : VisitorAccount) : OrderResponse
+    fun createOrder(account : VisitorAccount) : OrderResponse
+    fun addDishIntoOrder(account: VisitorAccount) : OrderResponse
+    fun payOrder(account: VisitorAccount) : OrderResponse
+    fun exit() : OrderResponse
 }

@@ -1,9 +1,9 @@
 package presentation.models
 
-enum class VisitorOptions {
+enum class VisitorMenuOptions {
     CreateOrder,
-    GetOrderStatus,
     AddDishIntoOrder,
     PayOrder,
+    CancelOrder,
     Exit;
 }

@@ -11,4 +11,6 @@ interface DishRepository {
     fun setAmountForDish(dishName : String, amount : Int)
     fun setPriceForDish(dishName : String, price : Double)
     fun setDifficultyForDish(dishName : String, durationInMinutes : Int)
+    fun getAvailableDishes() : List<Dish>
+    fun getDishByName(dishName : String) : Dish?
 }

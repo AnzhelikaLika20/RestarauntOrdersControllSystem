@@ -15,6 +15,6 @@ class MenuFactory {
     }
 
     fun getVisitorMenu() : VisitorMenu {
-        return VisitorMenuImpl(DI.orderService)
+        return VisitorMenuImpl(DI.orderService, DI.menuService)
     }
 }
