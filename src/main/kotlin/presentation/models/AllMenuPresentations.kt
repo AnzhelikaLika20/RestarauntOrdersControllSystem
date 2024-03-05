@@ -18,6 +18,6 @@ class AllMenuPresentations {
             "2. Add dish into the order,\n" +
             "3. Pay order,\n" +
             "4. Cancel order\n" +
-            "4. Exit\n"
+            "5. Exit\n"
 
 }

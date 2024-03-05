@@ -1,9 +1,6 @@
 package presentation.menu
 
-import data.models.Dish
-import data.models.Order
-import data.models.OrderStatus
-import data.models.VisitorAccount
+import data.models.*
 import di.DI
 import presentation.interfaces.VisitorMenu
 import presentation.models.VisitorMenuOptions
@@ -85,17 +82,23 @@ class VisitorMenuImpl(private val orderService: OrderService, private val menuSe
         return orderService.createOrder(dishNames, account.login)
     }
 
-    private fun showActiveOrdersOfUser(login: String) {
+    private fun getActiveOrdersOfUser(login: String) : List<String>? {
+        val activeOrdersOfUser = orderService.getActiveOrdersOfUser(login)
+        if(activeOrdersOfUser.isEmpty())
+            return null
         println("Your active orders:")
-        val activeOrders = orderService.getActiveOrdersOfUser(login)
-        activeOrders.forEach { x -> println(x) }
+        activeOrdersOfUser.forEach { x -> println(x) }
+        return activeOrdersOfUser
     }
 
     override fun addDishIntoOrder(account: VisitorAccount): OrderResponse {
-        showActiveOrdersOfUser(account.login)
+        val activeOrdersOfUser = getActiveOrdersOfUser(account.login)
+            ?: return  OrderResponse(ResponseCode.Success, "There is no any active orders\n", null)
         println("Enter id of order to add dish: ")
         val orderId =
-            readlnOrNull() ?: return OrderResponse(ResponseCode.BadRequest, "Order id should be not null", null)
+            readlnOrNull() ?: return OrderResponse(ResponseCode.BadRequest, "Order id should be not null\n", null)
+        if(!activeOrdersOfUser.contains(orderId))
+            return OrderResponse(ResponseCode.BadRequest, "There is no such order amount active orders\n", null)
         showAvailableDishes()
         val dishNames =
             getChosenDishesFromVisitor() ?: return OrderResponse(ResponseCode.BadRequest, "Incorrect input\n", null)
@@ -103,10 +106,38 @@ class VisitorMenuImpl(private val orderService: OrderService, private val menuSe
     }
 
     override fun payOrder(account: VisitorAccount): OrderResponse {
-        TODO("Not yet implemented")
+        if(!showReadyForPaymentOrders(account.login))
+            return OrderResponse(ResponseCode.Success, "There is no any ready for payment orders\n", null)
+        println("Enter id of order to pay it: ")
+        val orderId =
+            readlnOrNull() ?: return OrderResponse(ResponseCode.BadRequest, "Order id should be not null\n", null)
+        return orderService.payOrder(orderId, orderId)
+    }
+
+    private fun showReadyForPaymentOrders(login: String) : Boolean {
+        val readyForPaymentOrdersOfUser = orderService.getReadyForPaymentOrdersOfUser(login)
+        if(readyForPaymentOrdersOfUser.isEmpty())
+            return false
+        println("Your ready for payment orders:")
+        readyForPaymentOrdersOfUser.forEach { x -> println(x) }
+        return true
     }
 
     private fun cancelOrder(account: VisitorAccount): OrderResponse {
-        TODO("Not yet implemented")
+        if(!showCookingOrders(account.login))
+            return OrderResponse(ResponseCode.Success, "There is no any preparing orders\n", null)
+        println("Enter id of order to cancel it: ")
+        val orderId =
+            readlnOrNull() ?: return OrderResponse(ResponseCode.BadRequest, "Order id should be not null\n", null)
+        return orderService.cancelOrder(account.login, orderId)
+    }
+
+    private fun showCookingOrders(login: String) : Boolean{
+        val preparingOrdersOfUser = orderService.getPreparingOrdersOfUser(login)
+        if(preparingOrdersOfUser.isEmpty())
+            return false
+        println("Your preparing orders:")
+        preparingOrdersOfUser.forEach { x -> println(x) }
+        return true
     }
 }

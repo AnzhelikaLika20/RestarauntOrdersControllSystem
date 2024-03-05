@@ -1,1 +1,1 @@
-[{"type":"VisitorAccount","login":"vis","password":"$2a$10$XkuMvxM9/TNK2todfyOCXe4ot4JRG0trB9lJibxNb8vA43ohWrBRW","isActive":true}]
+[{"type":"AdminAccount","login":"adm","password":"$2a$10$lMnUZdGKI7l6W.tAoex/AedhRGbOz/8c5k9BsIdqO4Ts7eO9WODvi","isActive":true},{"type":"VisitorAccount","login":"vis","password":"$2a$10$XkuMvxM9/TNK2todfyOCXe4ot4JRG0trB9lJibxNb8vA43ohWrBRW","isActive":true}]

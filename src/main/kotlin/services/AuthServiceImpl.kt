@@ -52,6 +52,6 @@ class AuthServiceImpl(private val userRepository: UserRepositoryImpl) : AuthServ
             Role.Visitor -> VisitorAccount(login, hashedPassword)
         }
         userRepository.createAccount(user)
-        return AuthResponse (ResponseCode.Success, "User was successfully signed up\n", user)
+        return AuthResponse (ResponseCode.Success, "User was successfully signed up\n\n", user)
     }
 }
