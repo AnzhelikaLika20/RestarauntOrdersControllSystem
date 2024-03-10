@@ -43,7 +43,6 @@ class UserRepositoryImpl(private val pathToSerializedStorage: String) : UserRepo
         }
         val listOfUsers = if (infoFromFile.isBlank()) mutableListOf() else
             json.decodeFromString<List<UserAccount>>(infoFromFile).toMutableList()
-        user.isActive = true
         listOfUsers.addLast(user)
         storeInfo(listOfUsers)
     }
@@ -52,7 +51,6 @@ class UserRepositoryImpl(private val pathToSerializedStorage: String) : UserRepo
         val listOfUsers = getAllUsers().toMutableList()
         listOfUsers.removeIf { x -> x.login == login }
         val user = getAccountByLogin(login)
-        user.isActive = true
         listOfUsers.add(user)
         storeInfo(listOfUsers)
     }

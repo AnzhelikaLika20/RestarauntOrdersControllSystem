@@ -6,5 +6,4 @@ import kotlinx.serialization.Serializable
 sealed class UserAccount(
     val login: String,
     val password: String,
-    var isActive: Boolean = false
 )

@@ -1,20 +1,12 @@
 [
     {
         "type": "VisitorAccount",
-        "login": "Anzhelika",
-        "password": "$2a$10$/FCbceg93HePKZEWT3fF6.zW5LZoeGR7OztUXeV7Ioaca5eE.c9Cu",
-        "isActive": true
+        "login": "vis",
+        "password": "$2a$10$KrlufHJZgqvOk8mEpDxo1O117vB19zaF37TrWNbUrx6xJlfHYtSD."
     },
     {
         "type": "AdminAccount",
         "login": "adm",
-        "password": "$2a$10$lMnUZdGKI7l6W.tAoex/AedhRGbOz/8c5k9BsIdqO4Ts7eO9WODvi",
-        "isActive": true
-    },
-    {
-        "type": "VisitorAccount",
-        "login": "vis",
-        "password": "$2a$10$XkuMvxM9/TNK2todfyOCXe4ot4JRG0trB9lJibxNb8vA43ohWrBRW",
-        "isActive": true
+        "password": "$2a$10$paRpbVwgPOESbiKtupG2l.rz4WNbGFfvRkWRbnpJv1U/KRlr.JfV6"
     }
 ]
