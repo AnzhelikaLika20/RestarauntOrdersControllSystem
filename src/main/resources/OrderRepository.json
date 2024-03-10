@@ -1,0 +1,57 @@
+[
+    {
+        "id": "b8ac1a14-8a70-4e71-81a5-77457c4266fe",
+        "dishes": [
+            {
+                "name": "pasta",
+                "price": 123.0,
+                "difficulty": 12
+            },
+            {
+                "name": "tea",
+                "price": 123.0,
+                "difficulty": 23
+            }
+        ],
+        "status": "Paid",
+        "totalPrice": 246.0,
+        "preparingDurationInMinutes": 23,
+        "creationTime": "2024-03-10T13:26:13.349142",
+        "visitorLogin": "vis"
+    },
+    {
+        "id": "12f2c861-739b-4255-ae73-528ef7338f86",
+        "dishes": [
+            {
+                "name": "pasta",
+                "price": 123.0,
+                "difficulty": 12
+            }
+        ],
+        "status": "Paid",
+        "totalPrice": 123.0,
+        "preparingDurationInMinutes": 12,
+        "creationTime": "2024-03-10T14:01:00.8308997",
+        "visitorLogin": "vis"
+    },
+    {
+        "id": "06a4ecfa-4fdc-4dc4-94d9-412cb655d613",
+        "dishes": [
+            {
+                "name": "pasta",
+                "price": 123.0,
+                "difficulty": 12
+            },
+            {
+                "name": "tea",
+                "price": 123.0,
+                "difficulty": 23
+            }
+        ],
+        "status": "Cancelled",
+        "totalPrice": 246.0,
+        "preparingDurationInMinutes": 23,
+        "creationTime": "2024-03-10T15:02:00.1161789",
+        "visitorLogin": "vis"
+    }
+]

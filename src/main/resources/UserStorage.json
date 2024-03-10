@@ -1,0 +1,12 @@
+[
+    {
+        "type": "VisitorAccount",
+        "login": "vis",
+        "password": "$2a$10$KrlufHJZgqvOk8mEpDxo1O117vB19zaF37TrWNbUrx6xJlfHYtSD."
+    },
+    {
+        "type": "AdminAccount",
+        "login": "adm",
+        "password": "$2a$10$paRpbVwgPOESbiKtupG2l.rz4WNbGFfvRkWRbnpJv1U/KRlr.JfV6"
+    }
+]
