@@ -1,1 +1,37 @@
-[]
+[
+    {
+        "id": "0488eaee-19c9-4727-8393-40540caf255f",
+        "dishes": [
+            {
+                "name": "pasta",
+                "price": 123.0,
+                "difficulty": 12
+            },
+            {
+                "name": "tea",
+                "price": 123.0,
+                "difficulty": 23
+            }
+        ],
+        "status": "Paid",
+        "totalPrice": 246.0,
+        "preparingDurationInMinutes": 23,
+        "creationTime": "03:39:10",
+        "visitorLogin": "vis"
+    },
+    {
+        "id": "7911d62c-818b-4038-bb5c-43e164f8763b",
+        "dishes": [
+            {
+                "name": "pasta",
+                "price": 123.0,
+                "difficulty": 12
+            }
+        ],
+        "status": "Paid",
+        "totalPrice": 123.0,
+        "preparingDurationInMinutes": 12,
+        "creationTime": "04:16:39",
+        "visitorLogin": "Anzhelika"
+    }
+]

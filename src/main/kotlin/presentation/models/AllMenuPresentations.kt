@@ -12,12 +12,15 @@ class AllMenuPresentations {
             "3. Set amount for dish,\n" +
             "4. Set price for dish,\n" +
             "5. Set difficulty for dish\n" +
-            "6. Exit\n"
+            "6. Get dish reviews\n" +
+            "7. Get statistics\n" +
+            "8. Exit\n"
 
     val visitorOptions : String = "1. Create order,\n" +
             "2. Add dish into the order,\n" +
             "3. Pay order,\n" +
             "4. Cancel order\n" +
-            "5. Exit\n"
+            "5. Give review\n" +
+            "6. Exit\n"
 
 }

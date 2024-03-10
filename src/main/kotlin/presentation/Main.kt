@@ -12,11 +12,13 @@ fun main() {
     val authMenu = menuFactory.getAuthMenu()
     val visitorMenu = menuFactory.getVisitorMenu()
 
-    val response = authMenu.dealWithUser()
-    if(response.status == ResponseCode.Exiting)
-        return
-    if(response.account is AdminAccount)
-        dishMenu.dealWithUser()
-    else
-        visitorMenu.dealWithUser(response.account as VisitorAccount)
+    while (true) {
+        val response = authMenu.dealWithUser()
+        if (response.status == ResponseCode.Exiting)
+            return
+        if (response.account is AdminAccount)
+            dishMenu.dealWithUser()
+        else
+            visitorMenu.dealWithUser(response.account as VisitorAccount)
+    }
 }

@@ -1,0 +1,16 @@
+[
+    {
+        "id": "d64f7f6f-a771-402e-9562-7acf50c14998",
+        "login": "vis",
+        "dishName": "pasta",
+        "rate": 5,
+        "comment": "cool dish"
+    },
+    {
+        "id": "d607f05d-1569-4192-bd75-88553aeb4f87",
+        "login": "Anzhelika",
+        "dishName": "pasta",
+        "rate": 4,
+        "comment": "too many salt"
+    }
+]

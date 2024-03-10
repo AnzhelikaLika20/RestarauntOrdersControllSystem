@@ -6,5 +6,7 @@ enum class DishMenuOptions {
     SetAmount,
     SetPrice,
     SetDifficulty,
+    GetReviews,
+    GetStatistics,
     Exit;
 }

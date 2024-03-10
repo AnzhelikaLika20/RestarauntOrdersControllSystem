@@ -1,15 +1,10 @@
 package di
 
-import data.repositories.DishRepositoryImpl
-import data.repositories.OrderRepositoryImpl
-import data.repositories.UserRepositoryImpl
-import services.AuthServiceImpl
-import services.interfaces.AuthService
+import data.Interfaces.StatisticsRepository
+import data.repositories.*
 import presentation.models.AllMenuPresentations
-import services.MenuServiceImpl
-import services.OrderServiceImpl
-import services.interfaces.MenuService
-import services.interfaces.OrderService
+import services.*
+import services.interfaces.*
 
 object DI {
 
@@ -25,14 +20,28 @@ object DI {
         OrderRepositoryImpl("src/main/resources/OrderRepository.json")
     }
 
+    private val reviewRepository: ReviewRepositoryImpl by lazy {
+        ReviewRepositoryImpl("src/main/resources/ReviewRepository.json")
+    }
+
+    private val statisticsRepository: StatisticsRepositoryImpl by lazy {
+        StatisticsRepositoryImpl("src/main/resources/StatisticsRepository.json")
+    }
+
     val authService : AuthService
         get() = AuthServiceImpl(userRepository)
+
+    val statisticsService : StatisticsService
+        get() = StatisticsServiceImpl(statisticsRepository)
 
     val menuService : MenuService
         get() = MenuServiceImpl(dishRepository)
 
     val orderService : OrderService
         get() = OrderServiceImpl(orderRepository)
+
+    val reviewService : ReviewService
+        get() = ReviewServiceImpl(reviewRepository)
 
     val menuPresentations : AllMenuPresentations
         get() = AllMenuPresentations()

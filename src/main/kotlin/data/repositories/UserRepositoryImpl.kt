@@ -2,6 +2,7 @@ package data.repositories
 
 import data.Interfaces.UserRepository
 import data.models.AdminAccount
+import data.models.Order
 import data.models.UserAccount
 import data.models.VisitorAccount
 import kotlinx.serialization.encodeToString
@@ -13,16 +14,18 @@ import kotlinx.serialization.modules.polymorphic
 
 
 class UserRepositoryImpl(private val pathToSerializedStorage: String) : UserRepository {
-    override fun storeInfo(info: String) {
+    private val json = Json{prettyPrint = true}
+    private fun storeInfo(listOrders: List<UserAccount>) {
         val file = File(pathToSerializedStorage)
-        file.writeText(info)
+        val serializedInfo = json.encodeToString(listOrders)
+        file.writeText(serializedInfo)
     }
 
-    override fun loadInfo() : String {
+    fun loadInfo() : String {
         val file = File(pathToSerializedStorage)
         try {
             return file.readText()
-        } catch (ex: FileNotFoundException) {
+        } catch (_: FileNotFoundException) {
             file.createNewFile()
             return ""
         }
@@ -31,6 +34,7 @@ class UserRepositoryImpl(private val pathToSerializedStorage: String) : UserRepo
     override fun createAccount(user : UserAccount) {
         val infoFromFile = loadInfo()
         val json = Json {
+            prettyPrint = true
             serializersModule = SerializersModule {
                 polymorphic(UserAccount::class) {
                     subclass(AdminAccount::class, AdminAccount.serializer())
@@ -42,39 +46,33 @@ class UserRepositoryImpl(private val pathToSerializedStorage: String) : UserRepo
             json.decodeFromString<List<UserAccount>>(infoFromFile).toMutableList()
         user.isActive = true
         listOfUsers.addLast(user)
-        val serializedInfo = Json.encodeToString(listOfUsers.toList())
-        storeInfo(serializedInfo)
+        storeInfo(listOfUsers)
     }
 
     override fun enterAccount(login: String) {
-        val infoFromFile = loadInfo()
-        val listOfUsers: MutableList<UserAccount> =
-            if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<UserAccount>>(
-                infoFromFile
-            ).toMutableList()
+        val listOfUsers = getAllUsers().toMutableList()
         listOfUsers.removeIf { x -> x.login == login }
         val user = getAccountByLogin(login)
         user.isActive = true
         listOfUsers.add(user)
-        val serializedInfo = Json.encodeToString(listOfUsers)
-        storeInfo(serializedInfo)
+        storeInfo(listOfUsers)
     }
 
     override fun containsLogin(login: String): Boolean {
-        val infoFromFile = loadInfo()
-        val listOfUsers: MutableList<UserAccount> =
-            if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<UserAccount>>(
-                infoFromFile
-            ).toMutableList()
+        val listOfUsers = getAllUsers()
         return listOfUsers.any{x -> x.login == login}
     }
 
     override fun getAccountByLogin(login: String): UserAccount {
-        val infoFromFile = loadInfo()
-        val listOfUsers: MutableList<UserAccount> =
-            if (infoFromFile.isBlank()) mutableListOf() else Json.decodeFromString<List<UserAccount>>(
-                infoFromFile
-            ).toMutableList()
+        val listOfUsers = getAllUsers()
         return listOfUsers.single { x -> x.login == login }
+    }
+    private fun getAllUsers() : List<UserAccount> {
+        val infoFromFile = loadInfo()
+        val listOfUsers =
+            if (infoFromFile.isBlank()) listOf() else Json.decodeFromString<List<UserAccount>>(
+                infoFromFile
+            )
+        return listOfUsers
     }
 }

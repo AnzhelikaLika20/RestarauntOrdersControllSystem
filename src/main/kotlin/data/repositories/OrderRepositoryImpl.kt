@@ -12,126 +12,82 @@ import java.io.FileNotFoundException
 import java.time.LocalTime
 
 class OrderRepositoryImpl(private val pathToSerializedStorage: String) : OrderRepository {
-    override fun storeInfo(info: String) {
+    private val json = Json{prettyPrint = true}
+    private fun storeInfo(listOrders: List<Order>) {
         val file = File(pathToSerializedStorage)
-        file.writeText(info)
+        val serializedInfo = json.encodeToString(listOrders)
+        file.writeText(serializedInfo)
     }
 
-    override fun loadInfo(): String {
+    private fun loadInfo(): String {
         val file = File(pathToSerializedStorage)
         try {
             return file.readText()
-        } catch (ex: FileNotFoundException) {
+        } catch (_: FileNotFoundException) {
             file.createNewFile()
             return ""
         }
     }
     override fun addOrder(order: Order) {
-        val infoFromFile = loadInfo()
-        val json = Json {
-            serializersModule = SerializersModule {
-                contextual(LocalTime::class, LocalTimeSerializer)
-            }
-        }
-        val listOfOrders = if (infoFromFile.isBlank()) mutableListOf() else
-            json.decodeFromString<List<Order>>(infoFromFile).toMutableList()
+        val listOfOrders = getAllOrders().toMutableList()
         listOfOrders.addLast(order)
-        val serializedInfo = Json.encodeToString(listOfOrders)
-        storeInfo(serializedInfo)
+        storeInfo(listOfOrders)
     }
 
     override fun containsOrder(uuid: String): Boolean {
-        val infoFromFile = loadInfo()
-        val json = Json {
-            serializersModule = SerializersModule {
-                contextual(LocalTime::class, LocalTimeSerializer)
-            }
-        }
-        val listOfOrders = if (infoFromFile.isBlank()) mutableListOf() else
-            json.decodeFromString<List<Order>>(infoFromFile).toMutableList()
+        val listOfOrders = getAllOrders()
         return listOfOrders.any{x -> x.id == uuid}
     }
 
     override fun getActiveOrdersOfUser(login: String): List<String> {
-        val infoFromFile = loadInfo()
-        val json = Json {
-            serializersModule = SerializersModule {
-                contextual(LocalTime::class, LocalTimeSerializer)
-            }
-        }
-        val listOfOrders = if (infoFromFile.isBlank()) mutableListOf() else
-            json.decodeFromString<List<Order>>(infoFromFile).toMutableList()
+        val listOfOrders = getAllOrders()
         return listOfOrders.filter { x -> x.visitorLogin == login && x.status == OrderStatus.Preparing}.map{it.id}
     }
 
-    override fun addDishIntoOrder(uuid: String, dishes : List<OrderDish>) : Order? {
+    override fun getPaidOrdersOfUser(login: String): List<String> {
+        val listOfOrders = getAllOrders()
+        return listOfOrders.filter { x -> x.visitorLogin == login && x.status == OrderStatus.Paid}.map{it.id}
+    }
+
+    override fun getAllOrders(): List<Order> {
         val infoFromFile = loadInfo()
         val json = Json {
             serializersModule = SerializersModule {
                 contextual(LocalTime::class, LocalTimeSerializer)
             }
         }
-        val listOfOrders = if (infoFromFile.isBlank()) mutableListOf() else
-            json.decodeFromString<List<Order>>(infoFromFile).toMutableList()
+        val listOfOrders = if (infoFromFile.isBlank()) listOf() else
+            json.decodeFromString<List<Order>>(infoFromFile)
+        return listOfOrders
+    }
+
+    override fun addDishesIntoOrder(uuid: String, dishes : List<OrderDish>) : Order? {
+        val listOfOrders = getAllOrders().toMutableList()
         val order = listOfOrders.find { x -> x.id == uuid } ?: return null
         listOfOrders.removeIf { x -> x.id == uuid }
         dishes.forEach { x -> order.dishes.addLast(x) }
-        addOrder(order)
-        val serializedInfo = Json.encodeToString(listOfOrders)
-        storeInfo(serializedInfo)
+        listOfOrders.addLast(order)
+        storeInfo(listOfOrders)
         return order
     }
 
     override fun getOrderById(uuid: String): Order? {
-        val infoFromFile = loadInfo()
-        val json = Json {
-            serializersModule = SerializersModule {
-                contextual(LocalTime::class, LocalTimeSerializer)
-            }
-        }
-        val listOfOrders = if (infoFromFile.isBlank()) mutableListOf() else
-            json.decodeFromString<List<Order>>(infoFromFile).toMutableList()
+        val listOfOrders = getAllOrders()
         return listOfOrders.find { x -> x.id == uuid }
     }
 
     override fun getReadyForPaymentOrdersOfUser(login: String): List<String> {
-        val infoFromFile = loadInfo()
-        val json = Json {
-            serializersModule = SerializersModule {
-                contextual(LocalTime::class, LocalTimeSerializer)
-            }
-        }
-        val listOfOrders = if (infoFromFile.isBlank()) mutableListOf() else
-            json.decodeFromString<List<Order>>(infoFromFile).toMutableList()
+        val listOfOrders = getAllOrders()
         return listOfOrders.filter { x -> x.visitorLogin == login && x.status == OrderStatus.Ready}.map{it.id}
     }
 
     override fun changeStatus(uuid: String, status: OrderStatus) {
-        val infoFromFile = loadInfo()
-        val json = Json {
-            serializersModule = SerializersModule {
-                contextual(LocalTime::class, LocalTimeSerializer)
-            }
-        }
-        val listOfOrders = if (infoFromFile.isBlank()) mutableListOf() else
-            json.decodeFromString<List<Order>>(infoFromFile).toMutableList()
+        val listOfOrders = getAllOrders().toMutableList()
         val order = listOfOrders.find { x -> x.id == uuid } ?: return
         listOfOrders.removeIf { x -> x.id == uuid }
-        order.status = OrderStatus.Paid
-        addOrder(order)
-        val serializedInfo = Json.encodeToString(listOfOrders)
-        storeInfo(serializedInfo)
+        order.status = status
+        listOfOrders.addLast(order)
+        storeInfo(listOfOrders)
     }
 
-    override fun getPreparingOrdersOfUser(login: String): List<String> {
-        val infoFromFile = loadInfo()
-        val json = Json {
-            serializersModule = SerializersModule {
-                contextual(LocalTime::class, LocalTimeSerializer)
-            }
-        }
-        val listOfOrders = if (infoFromFile.isBlank()) mutableListOf() else
-            json.decodeFromString<List<Order>>(infoFromFile).toMutableList()
-        return listOfOrders.filter { x -> x.visitorLogin == login && x.status == OrderStatus.Preparing}.map{it.id}
-    }
 }

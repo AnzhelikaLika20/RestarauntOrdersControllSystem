@@ -6,21 +6,24 @@ import presentation.interfaces.VisitorMenu
 import presentation.models.VisitorMenuOptions
 import services.interfaces.MenuService
 import services.interfaces.OrderService
-import services.models.DishResponse
-import services.models.OrderResponse
-import services.models.ResponseCode
+import services.interfaces.ReviewService
+import services.models.*
 import java.time.Instant
 import java.time.LocalTime
 import java.util.*
 
-class VisitorMenuImpl(private val orderService: OrderService, private val menuService: MenuService) : VisitorMenu {
+class VisitorMenuImpl(
+    private val orderService: OrderService,
+    private val menuService: MenuService,
+    private val reviewService: ReviewService
+) : VisitorMenu {
     override fun displayMenuOptions() {
         print(DI.menuPresentations.visitorOptions)
 
     }
 
-    override fun dealWithUser(account: VisitorAccount): OrderResponse {
-        var dishResponse: OrderResponse
+    override fun dealWithUser(account: VisitorAccount): Response {
+        var dishResponse: Response
         do {
             displayMenuOptions()
             dishResponse = mapUserChoice(getUserOptionChoice(), account)
@@ -29,12 +32,13 @@ class VisitorMenuImpl(private val orderService: OrderService, private val menuSe
         return dishResponse
     }
 
-    private fun mapUserChoice(userChoice: VisitorMenuOptions?, account: VisitorAccount): OrderResponse {
+    private fun mapUserChoice(userChoice: VisitorMenuOptions?, account: VisitorAccount): Response {
         return when (userChoice) {
             VisitorMenuOptions.CreateOrder -> createOrder(account)
             VisitorMenuOptions.AddDishIntoOrder -> addDishIntoOrder(account)
             VisitorMenuOptions.PayOrder -> payOrder(account)
             VisitorMenuOptions.CancelOrder -> cancelOrder(account)
+            VisitorMenuOptions.LeaveReview -> createReview(account)
             VisitorMenuOptions.Exit -> exit()
             else -> run {
                 return OrderResponse(ResponseCode.BadRequest, "Incorrect input\n\n", null)
@@ -42,7 +46,36 @@ class VisitorMenuImpl(private val orderService: OrderService, private val menuSe
         }
     }
 
+    override fun createReview(account: VisitorAccount): ReviewResponse {
+        val paidOrders =
+            orderService.getAllOrders().filter { it.status == OrderStatus.Paid && it.visitorLogin == account.login }
+        if (paidOrders.isEmpty()) {
+            return ReviewResponse(ResponseCode.BadRequest, "You have no paid orders. Cannot leave a review.\n\n", null)
+        }
+        println("Enter the name of the dish you want to leave a review on:")
+        val dishName = readlnOrNull() ?: return ReviewResponse(ResponseCode.BadRequest, "Incorrect dish\n", null)
+        val paidDishes = paidOrders.flatMap { it.dishes }.distinct()
+        if (paidDishes.none { it.name == dishName }) {
+            return ReviewResponse(
+                ResponseCode.BadRequest,
+                "Dish \"$dishName\" was not found in any order you paid for. Cannot leave a review on it.\n",
+                null
+            )
+        }
+        println("Enter the text comment to the dish")
+        val comment =
+            readlnOrNull() ?: return ReviewResponse(ResponseCode.BadRequest, "Comment should be not null\n", null)
+        println("Enter the rate of the dish from 1 to 5")
+        val rate = readlnOrNull()?.toIntOrNull() ?: return ReviewResponse(
+            ResponseCode.BadRequest,
+            "Rate should be not null\n",
+            null
+        )
+        return reviewService.leaveReview(account.login, dishName, rate, comment)
+    }
+
     override fun exit(): OrderResponse {
+        orderService.clearOrders()
         return OrderResponse(ResponseCode.Exiting, "Exiting\n\n", null)
     }
 
@@ -53,19 +86,16 @@ class VisitorMenuImpl(private val orderService: OrderService, private val menuSe
             2 -> VisitorMenuOptions.AddDishIntoOrder
             3 -> VisitorMenuOptions.PayOrder
             4 -> VisitorMenuOptions.CancelOrder
-            5 -> VisitorMenuOptions.Exit
+            5 -> VisitorMenuOptions.LeaveReview
+            6 -> VisitorMenuOptions.Exit
             else -> null
         }
     }
 
     private fun showAvailableDishes() {
         val availableDishes = menuService.getAvailableDishes()
-        if (availableDishes.isEmpty()) {
-            println("There is no available dishes\n")
-        } else {
-            println("Available dishes:")
-            availableDishes.forEach { x -> println(x.name) }
-        }
+        println("Available dishes:")
+        availableDishes.forEach { x -> println(x.name) }
     }
 
     private fun getChosenDishesFromVisitor(): List<String>? {
@@ -76,15 +106,17 @@ class VisitorMenuImpl(private val orderService: OrderService, private val menuSe
     }
 
     override fun createOrder(account: VisitorAccount): OrderResponse {
+        if (menuService.getAvailableDishes().isEmpty())
+            return OrderResponse(ResponseCode.Success, "There is no available dishes\n", null)
         showAvailableDishes()
         val dishNames =
             getChosenDishesFromVisitor() ?: return OrderResponse(ResponseCode.BadRequest, "Incorrect input\n", null)
         return orderService.createOrder(dishNames, account.login)
     }
 
-    private fun getActiveOrdersOfUser(login: String) : List<String>? {
+    private fun getActiveOrdersOfUser(login: String): List<String>? {
         val activeOrdersOfUser = orderService.getActiveOrdersOfUser(login)
-        if(activeOrdersOfUser.isEmpty())
+        if (activeOrdersOfUser.isEmpty())
             return null
         println("Your active orders:")
         activeOrdersOfUser.forEach { x -> println(x) }
@@ -93,11 +125,11 @@ class VisitorMenuImpl(private val orderService: OrderService, private val menuSe
 
     override fun addDishIntoOrder(account: VisitorAccount): OrderResponse {
         val activeOrdersOfUser = getActiveOrdersOfUser(account.login)
-            ?: return  OrderResponse(ResponseCode.Success, "There is no any active orders\n", null)
+            ?: return OrderResponse(ResponseCode.Success, "There is no any active orders\n", null)
         println("Enter id of order to add dish: ")
         val orderId =
             readlnOrNull() ?: return OrderResponse(ResponseCode.BadRequest, "Order id should be not null\n", null)
-        if(!activeOrdersOfUser.contains(orderId))
+        if (!activeOrdersOfUser.contains(orderId))
             return OrderResponse(ResponseCode.BadRequest, "There is no such order amount active orders\n", null)
         showAvailableDishes()
         val dishNames =
@@ -106,17 +138,17 @@ class VisitorMenuImpl(private val orderService: OrderService, private val menuSe
     }
 
     override fun payOrder(account: VisitorAccount): OrderResponse {
-        if(!showReadyForPaymentOrders(account.login))
+        if (!showReadyForPaymentOrders(account.login))
             return OrderResponse(ResponseCode.Success, "There is no any ready for payment orders\n", null)
         println("Enter id of order to pay it: ")
         val orderId =
             readlnOrNull() ?: return OrderResponse(ResponseCode.BadRequest, "Order id should be not null\n", null)
-        return orderService.payOrder(orderId, orderId)
+        return orderService.payOrder(account.login, orderId)
     }
 
-    private fun showReadyForPaymentOrders(login: String) : Boolean {
+    private fun showReadyForPaymentOrders(login: String): Boolean {
         val readyForPaymentOrdersOfUser = orderService.getReadyForPaymentOrdersOfUser(login)
-        if(readyForPaymentOrdersOfUser.isEmpty())
+        if (readyForPaymentOrdersOfUser.isEmpty())
             return false
         println("Your ready for payment orders:")
         readyForPaymentOrdersOfUser.forEach { x -> println(x) }
@@ -124,7 +156,7 @@ class VisitorMenuImpl(private val orderService: OrderService, private val menuSe
     }
 
     private fun cancelOrder(account: VisitorAccount): OrderResponse {
-        if(!showCookingOrders(account.login))
+        if (!showCookingOrders(account.login))
             return OrderResponse(ResponseCode.Success, "There is no any preparing orders\n", null)
         println("Enter id of order to cancel it: ")
         val orderId =
@@ -132,9 +164,9 @@ class VisitorMenuImpl(private val orderService: OrderService, private val menuSe
         return orderService.cancelOrder(account.login, orderId)
     }
 
-    private fun showCookingOrders(login: String) : Boolean{
+    private fun showCookingOrders(login: String): Boolean {
         val preparingOrdersOfUser = orderService.getPreparingOrdersOfUser(login)
-        if(preparingOrdersOfUser.isEmpty())
+        if (preparingOrdersOfUser.isEmpty())
             return false
         println("Your preparing orders:")
         preparingOrdersOfUser.forEach { x -> println(x) }
