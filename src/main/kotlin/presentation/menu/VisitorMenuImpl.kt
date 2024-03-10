@@ -47,7 +47,7 @@ class VisitorMenuImpl(
         }
     }
 
-    override fun createReview(account: VisitorAccount): ReviewResponse {
+    fun createReview(account: VisitorAccount): ReviewResponse {
         val paidOrders =
             orderService.getAllOrders().filter { it.status == OrderStatus.Paid && it.visitorLogin == account.login }
         if (paidOrders.isEmpty()) {
@@ -75,7 +75,7 @@ class VisitorMenuImpl(
         return reviewService.leaveReview(account.login, dishName, rate, comment)
     }
 
-    override fun exit(): OrderResponse {
+    fun exit(): OrderResponse {
         orderService.clearOrders()
         return OrderResponse(ResponseCode.Exiting, "Exiting\n\n", null)
     }
@@ -106,7 +106,7 @@ class VisitorMenuImpl(
         return dishNames
     }
 
-    override fun createOrder(account: VisitorAccount): OrderResponse {
+    fun createOrder(account: VisitorAccount): OrderResponse {
         if (menuService.getAvailableDishes().isEmpty())
             return OrderResponse(ResponseCode.Success, "There is no available dishes\n", null)
         showAvailableDishes()
@@ -124,7 +124,7 @@ class VisitorMenuImpl(
         return activeOrdersOfUser
     }
 
-    override fun addDishIntoOrder(account: VisitorAccount): OrderResponse {
+    fun addDishIntoOrder(account: VisitorAccount): OrderResponse {
         val activeOrdersOfUser = getActiveOrdersOfUser(account.login)
             ?: return OrderResponse(ResponseCode.Success, "There is no any active orders\n", null)
         println("Enter id of order to add dish: ")
@@ -138,7 +138,7 @@ class VisitorMenuImpl(
         return orderService.addDishIntoOrder(orderId, dishNames)
     }
 
-    override fun payOrder(account: VisitorAccount): OrderResponse {
+    fun payOrder(account: VisitorAccount): OrderResponse {
         if (!showReadyForPaymentOrders(account.login))
             return OrderResponse(ResponseCode.Success, "There is no any ready for payment orders\n", null)
         println("Enter id of order to pay it: ")
