@@ -1,7 +1,6 @@
 package presentation
 
 import data.models.AdminAccount
-import data.models.UserAccount
 import data.models.VisitorAccount
 import presentation.menu.MenuFactory
 import services.models.ResponseCode

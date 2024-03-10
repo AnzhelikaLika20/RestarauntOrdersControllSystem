@@ -1,15 +1,15 @@
 package services
 
+import data.interfaces.UserRepository
 import data.models.AdminAccount
 import data.models.VisitorAccount
-import data.repositories.UserRepositoryImpl
 import org.mindrot.jbcrypt.BCrypt
+import presentation.models.Role
 import services.interfaces.AuthService
 import services.models.AuthResponse
-import presentation.models.Role
 import services.models.ResponseCode
 
-class AuthServiceImpl(private val userRepository: UserRepositoryImpl) : AuthService {
+class AuthServiceImpl(private val userRepository: UserRepository) : AuthService {
 
     override fun loginUser(login: String, password: String): AuthResponse {
         return if (checkLoginExistence(login)) {
@@ -24,7 +24,7 @@ class AuthServiceImpl(private val userRepository: UserRepositoryImpl) : AuthServ
         val hashedPassword = user.password
         if (BCrypt.checkpw(password, hashedPassword)) {
             userRepository.enterAccount(login)
-            return AuthResponse (ResponseCode.Success, "User was successfully logged in\n\n", user)
+            return AuthResponse(ResponseCode.Success, "User was successfully logged in\n\n", user)
         }
         return AuthResponse(ResponseCode.BadRequest, "Incorrect password\n\n", user)
     }
@@ -52,6 +52,6 @@ class AuthServiceImpl(private val userRepository: UserRepositoryImpl) : AuthServ
             Role.Visitor -> VisitorAccount(login, hashedPassword)
         }
         userRepository.createAccount(user)
-        return AuthResponse (ResponseCode.Success, "User was successfully signed up\n\n", user)
+        return AuthResponse(ResponseCode.Success, "User was successfully signed up\n\n", user)
     }
 }

@@ -1,27 +1,26 @@
 package data.repositories
 
-import data.Interfaces.UserRepository
+import data.interfaces.UserRepository
 import data.models.AdminAccount
-import data.models.Order
 import data.models.UserAccount
 import data.models.VisitorAccount
 import kotlinx.serialization.encodeToString
-import java.io.File
-import java.io.FileNotFoundException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import java.io.File
+import java.io.FileNotFoundException
 
 
 class UserRepositoryImpl(private val pathToSerializedStorage: String) : UserRepository {
-    private val json = Json{prettyPrint = true}
+    private val json = Json { prettyPrint = true }
     private fun storeInfo(listOrders: List<UserAccount>) {
         val file = File(pathToSerializedStorage)
         val serializedInfo = json.encodeToString(listOrders)
         file.writeText(serializedInfo)
     }
 
-    fun loadInfo() : String {
+    fun loadInfo(): String {
         val file = File(pathToSerializedStorage)
         try {
             return file.readText()
@@ -31,7 +30,7 @@ class UserRepositoryImpl(private val pathToSerializedStorage: String) : UserRepo
         }
     }
 
-    override fun createAccount(user : UserAccount) {
+    override fun createAccount(user: UserAccount) {
         val infoFromFile = loadInfo()
         val json = Json {
             prettyPrint = true
@@ -60,14 +59,15 @@ class UserRepositoryImpl(private val pathToSerializedStorage: String) : UserRepo
 
     override fun containsLogin(login: String): Boolean {
         val listOfUsers = getAllUsers()
-        return listOfUsers.any{x -> x.login == login}
+        return listOfUsers.any { x -> x.login == login }
     }
 
     override fun getAccountByLogin(login: String): UserAccount {
         val listOfUsers = getAllUsers()
         return listOfUsers.single { x -> x.login == login }
     }
-    private fun getAllUsers() : List<UserAccount> {
+
+    private fun getAllUsers(): List<UserAccount> {
         val infoFromFile = loadInfo()
         val listOfUsers =
             if (infoFromFile.isBlank()) listOf() else Json.decodeFromString<List<UserAccount>>(

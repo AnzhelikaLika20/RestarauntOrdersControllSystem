@@ -4,5 +4,5 @@ import services.models.AuthResponse
 
 interface AuthMenu {
     fun displayMenuOptions()
-    fun dealWithUser() : AuthResponse
+    fun dealWithUser(): AuthResponse
 }

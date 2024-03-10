@@ -12,5 +12,12 @@
         "dishName": "pasta",
         "rate": 4,
         "comment": "too many salt"
+    },
+    {
+        "id": "5ce1e2ad-581f-4b9a-b7ac-7635ad070d40",
+        "login": "vis",
+        "dishName": "tea",
+        "rate": 5,
+        "comment": "tasty tea"
     }
 ]

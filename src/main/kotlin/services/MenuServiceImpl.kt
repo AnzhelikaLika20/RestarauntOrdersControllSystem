@@ -1,12 +1,12 @@
 package services
 
+import data.interfaces.DishRepository
 import data.models.Dish
-import data.repositories.DishRepositoryImpl
 import services.interfaces.MenuService
 import services.models.DishResponse
 import services.models.ResponseCode
 
-class MenuServiceImpl(private val dishRepository: DishRepositoryImpl) : MenuService {
+class MenuServiceImpl(private val dishRepository: DishRepository) : MenuService {
     private val hintDishIsAbsent: String = "There is no dish with such name\n\n"
     override fun addDish(dish: Dish): DishResponse {
         if (dishRepository.containsDish(dish.name))

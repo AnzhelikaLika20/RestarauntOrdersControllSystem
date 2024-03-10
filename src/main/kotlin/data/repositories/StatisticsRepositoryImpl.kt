@@ -1,18 +1,17 @@
 package data.repositories
 
-import data.Interfaces.StatisticsRepository
-import data.models.Dish
+import data.interfaces.StatisticsRepository
+import data.models.Statistics
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileNotFoundException
 
 class StatisticsRepositoryImpl(private val pathToSerializedStorage: String) : StatisticsRepository {
-    private val json = Json{prettyPrint = true}
-    private fun storeInfo(listOrders: List<Dish>) {
+    private val json = Json { prettyPrint = true }
+    private fun storeInfo(statistics: String) {
         val file = File(pathToSerializedStorage)
-        val serializedInfo = json.encodeToString(listOrders)
-        file.writeText(serializedInfo)
+        file.writeText(statistics)
     }
 
     private fun loadInfo(): String {
@@ -24,11 +23,19 @@ class StatisticsRepositoryImpl(private val pathToSerializedStorage: String) : St
             return ""
         }
     }
-    override fun getStatistics() {
-        TODO("Not yet implemented")
+
+    override fun getStatistics(): Statistics {
+        val infoFromFile = loadInfo()
+        if (infoFromFile.isBlank())
+            return Statistics(0.0)
+        val statistics: Statistics = json.decodeFromString<Statistics>(
+            infoFromFile
+        )
+        return statistics
     }
 
-    override fun saveStatistics() {
-        TODO("Not yet implemented")
+    override fun saveStatistics(statistics: Statistics) {
+        val serializedStatistics = json.encodeToString(statistics)
+        storeInfo(serializedStatistics)
     }
 }

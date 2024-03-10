@@ -1,6 +1,6 @@
 [
     {
-        "id": "0488eaee-19c9-4727-8393-40540caf255f",
+        "id": "b8ac1a14-8a70-4e71-81a5-77457c4266fe",
         "dishes": [
             {
                 "name": "pasta",
@@ -16,11 +16,11 @@
         "status": "Paid",
         "totalPrice": 246.0,
         "preparingDurationInMinutes": 23,
-        "creationTime": "03:39:10",
+        "creationTime": "2024-03-10T13:26:13.349142",
         "visitorLogin": "vis"
     },
     {
-        "id": "7911d62c-818b-4038-bb5c-43e164f8763b",
+        "id": "12f2c861-739b-4255-ae73-528ef7338f86",
         "dishes": [
             {
                 "name": "pasta",
@@ -31,7 +31,7 @@
         "status": "Paid",
         "totalPrice": 123.0,
         "preparingDurationInMinutes": 12,
-        "creationTime": "04:16:39",
-        "visitorLogin": "Anzhelika"
+        "creationTime": "2024-03-10T14:01:00.8308997",
+        "visitorLogin": "vis"
     }
 ]

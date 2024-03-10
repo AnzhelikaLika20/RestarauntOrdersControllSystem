@@ -6,14 +6,19 @@ import presentation.interfaces.AdminMenu
 import presentation.models.DishMenuOptions
 import services.interfaces.MenuService
 import services.interfaces.OrderService
+import services.interfaces.ReviewService
 import services.interfaces.StatisticsService
 import services.models.DishResponse
+import services.models.Response
 import services.models.ResponseCode
+import java.time.LocalDateTime
+import java.time.format.DateTimeParseException
 
 class AdminMenuImpl(
     private val menuService: MenuService,
     private val statisticsService: StatisticsService,
-    private val orderService: OrderService
+    private val orderService: OrderService,
+    private val reviewService: ReviewService
 ) : AdminMenu {
     private val hintNotEmptyString = "Name should be not empty\n\n"
     private fun setDifficulty(): DishResponse {
@@ -129,8 +134,8 @@ class AdminMenuImpl(
         print(DI.menuPresentations.dishMenuOptions)
     }
 
-    override fun dealWithUser(): DishResponse {
-        var dishResponse: DishResponse
+    override fun dealWithUser(): Response {
+        var dishResponse: Response
         do {
             displayMenuOptions()
             dishResponse = mapUserChoice(getUserOptionChoice())
@@ -139,7 +144,7 @@ class AdminMenuImpl(
         return dishResponse
     }
 
-    private fun mapUserChoice(userChoice: DishMenuOptions?): DishResponse {
+    private fun mapUserChoice(userChoice: DishMenuOptions?): Response {
         return when (userChoice) {
             DishMenuOptions.AddDish -> addOrReplaceDish()
             DishMenuOptions.DropDish -> dropDish()
@@ -155,16 +160,56 @@ class AdminMenuImpl(
         }
     }
 
-    private fun getStatistics(): DishResponse {
-        /*val revenue = statisticsService.getRevenue()
-        val popularDishes = statisticsService.getPopularDishes()
-        val orderCount = statisticsService.getOrderCountOverPeriod()
-        val averageRating = statisticsService.getAverageRatingOfDishes()*/
-        TODO("Not yet implemented")
+    private fun getOrderCountOverPeriod(): Response {
+        val startDateTime: LocalDateTime
+        val endDateTime: LocalDateTime
 
+        try {
+            println(
+                "If you want to gat orders over some period, enter start date time " +
+                        "(yyyy-mm-ddThh:mm:ss) or press Enter"
+            )
+            val userInput = readlnOrNull()
+            if (userInput == "")
+                return Response(ResponseCode.BadRequest, "Enter was pressed\n")
+            startDateTime =
+                LocalDateTime.parse(userInput) ?: return Response(ResponseCode.BadRequest, "Incorrect input\n")
+
+            println("Enter end datetime of the period (yyyy-mm-ddThh:mm:ss): ")
+            endDateTime = LocalDateTime.parse(readlnOrNull()) ?: return Response(
+                ResponseCode.BadRequest,
+                "Incorrect input\n"
+            )
+        } catch (ex: DateTimeParseException) {
+            return Response(ResponseCode.BadRequest, "Datetime was in incorrect format\n")
+        }
+        return statisticsService.getOrderCountOverPeriod(startDateTime, endDateTime)
     }
 
-    private fun getReviews(): DishResponse {
-        TODO("Not yet implemented")
+    private fun getStatistics(): Response {
+        val revenue = statisticsService.getRevenue()
+        val popularDishes = statisticsService.getPopularDishes()
+        val averageRating = statisticsService.getAverageRatingOfDishes()
+        val orderAmountOverPeriod = getOrderCountOverPeriod()
+        if (orderAmountOverPeriod.status == ResponseCode.BadRequest)
+            println(orderAmountOverPeriod.hint)
+        return Response(
+            ResponseCode.Success,
+            "${revenue.hint}\n" +
+                    "${popularDishes.hint}\n" +
+                    "${averageRating.hint}\n" +
+                    if (orderAmountOverPeriod.status == ResponseCode.Success)
+                        "${orderAmountOverPeriod.hint}\n\n" else "\n"
+        )
+    }
+
+    private fun getReviews(): Response {
+        val reviews = reviewService.getDishReviews()
+        if (reviews.isEmpty())
+            return Response(ResponseCode.Success, "There are no any review in the system\n")
+        return Response(ResponseCode.Success, reviews.joinToString(
+            prefix = "Reviews: \n\t",
+            separator = "\n\t"
+        ) { "Dish: \"${it.dishName}\": rating = ${it.rate}, comment = ${it.comment}\n" })
     }
 }

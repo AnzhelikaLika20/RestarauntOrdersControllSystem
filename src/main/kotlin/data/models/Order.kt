@@ -1,8 +1,8 @@
 package data.models
 
 import kotlinx.serialization.Serializable
-import services.utils.LocalTimeSerializer
-import java.time.LocalTime
+import services.utils.LocalDateTimeSerializer
+import java.time.LocalDateTime
 
 @Serializable
 data class Order(
@@ -11,7 +11,7 @@ data class Order(
     var status: OrderStatus,
     var totalPrice: Double,
     var preparingDurationInMinutes: Int,
-    @Serializable(with = LocalTimeSerializer::class)
-    val creationTime: LocalTime,
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val creationTime: LocalDateTime,
     val visitorLogin: String
 )

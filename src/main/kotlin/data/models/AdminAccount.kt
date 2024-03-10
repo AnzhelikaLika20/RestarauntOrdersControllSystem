@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName("AdminAccount")
-class AdminAccount : UserAccount{
+class AdminAccount : UserAccount {
     constructor(adminLogin: String, adminPassword: String) : super(adminLogin, adminPassword)
 }

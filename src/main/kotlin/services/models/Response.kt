@@ -1,3 +1,3 @@
 package services.models
 
-open class Response (val status : ResponseCode, val hint : String)
+open class Response(val status: ResponseCode, val hint: String)
