@@ -33,5 +33,25 @@
         "preparingDurationInMinutes": 12,
         "creationTime": "2024-03-10T14:01:00.8308997",
         "visitorLogin": "vis"
+    },
+    {
+        "id": "06a4ecfa-4fdc-4dc4-94d9-412cb655d613",
+        "dishes": [
+            {
+                "name": "pasta",
+                "price": 123.0,
+                "difficulty": 12
+            },
+            {
+                "name": "tea",
+                "price": 123.0,
+                "difficulty": 23
+            }
+        ],
+        "status": "Cancelled",
+        "totalPrice": 246.0,
+        "preparingDurationInMinutes": 23,
+        "creationTime": "2024-03-10T15:02:00.1161789",
+        "visitorLogin": "vis"
     }
 ]

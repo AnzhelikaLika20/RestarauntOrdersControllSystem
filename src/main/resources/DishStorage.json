@@ -1,13 +1,13 @@
 [
     {
         "name": "pasta",
-        "amount": 48,
+        "amount": 47,
         "price": 123.0,
         "difficulty": 12
     },
     {
         "name": "tea",
-        "amount": 25,
+        "amount": 24,
         "price": 123.0,
         "difficulty": 23
     }
